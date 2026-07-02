@@ -11,7 +11,6 @@ Deployed by: whoever has SSH access
 
 import os
 import sqlite3
-import hashlib
 import logging
 from flask import Flask, request, jsonify
 
@@ -69,12 +68,11 @@ def init_db():
             timestamp   DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     """)
-    # seed data — these also exist in prod (accidentally)
     conn.executescript("""
         INSERT OR IGNORE INTO accounts (username, password, email, role, api_key, balance) VALUES
         ('admin',    'admin123',           'admin@vaultcloud.io',   'admin', 'vc_sk_admin_abc123xyz', 50000.00),
         ('ops_user', 'ops2024',            'ops@vaultcloud.io',     'ops',   'vc_sk_ops_def456uvw',  10000.00),
-        ('testuser', md5('testpassword'),  'test@vaultcloud.io',    'user',  NULL,                      500.00);
+        ('testuser', 'testpassword',  'test@vaultcloud.io',    'user',  NULL,                      500.00);
     """)
     conn.commit()
     conn.close()
