@@ -8,7 +8,7 @@ services:
   app:
     build: ./app
     ports:
-      - "5000:5000"
+      - "5003:5000"
     volumes:
       - appdata:/app/data
     environment:

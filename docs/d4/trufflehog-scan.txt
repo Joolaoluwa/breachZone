@@ -1,0 +1,4 @@
+🐷🔑🐷  TruffleHog. Unearth your secrets. 🐷🔑🐷
+
+2026-07-01T11:08:40Z	info-0	trufflehog	running source	{"source_manager_worker_id": "60eSC", "with_units": true}
+2026-07-01T11:09:19Z	info-0	trufflehog	finished scanning	{"chunks": 89843, "bytes": 1195503047, "verified_secrets": 0, "unverified_secrets": 0, "scan_duration": "38.464114038s", "trufflehog_version": "3.95.7", "verification_caching": {"Hits":6,"Misses":48,"HitsWasted":1,"AttemptsSaved":5,"VerificationTimeSpentMS":15065}}

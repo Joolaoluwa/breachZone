@@ -30,33 +30,28 @@ logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
-# ================================================================== #
-#  FONCTION MD5 (définie UNE SEULE FOIS en global)                   #
-# ================================================================== #
-def md5_hash(text):
-    """Fonction MD5 personnalisée pour SQLite"""
-    if text is None:
-        return None
-    return hashlib.md5(text.encode()).hexdigest()
-
-
-# ================================================================== #
-#  BASE DE DONNÉES                                                    #
-# ================================================================== #
 def get_db():
-    """Ouvre une connexion SQLite et enregistre la fonction MD5"""
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
-    conn.create_function("md5", 1, md5_hash)  # ← ICI on enregistre UNE SEULE FOIS
+    
+    def md5_hash(text):            
+        if text is None:           
+            return None            
+        return hashlib.md5(text.encode()).hexdigest()  
+    
+    conn.create_function("md5", 1, md5_hash)
     return conn
 
-
 def init_db():
-    """Initialise la base de données avec les tables et les données de test"""
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-    conn = get_db()  # ← get_db() enregistre déjà md5
+    conn = get_db()
     
-    # Création des tables
+    def md5_hash(text):            
+        if text is None:           
+            return None            
+        return hashlib.md5(text.encode()).hexdigest()  
+    
+    conn.create_function("md5", 1, md5_hash)
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS accounts (
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -87,24 +82,20 @@ def init_db():
             timestamp   DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     """)
-    
-    # Données de test
-    # ✅ MAINTENANT md5() EST DISPONIBLE !
+    # seed data — these also exist in prod (accidentally)
     conn.executescript("""
         INSERT OR IGNORE INTO accounts (username, password, email, role, api_key, balance) VALUES
-        ('admin',    md5('admin123'),           'admin@vaultcloud.io',   'admin', 'vc_sk_admin_abc123xyz', 50000.00),
-        ('ops_user', md5('ops2024'),            'ops@vaultcloud.io',     'ops',   'vc_sk_ops_def456uvw',  10000.00),
-        ('testuser', md5('testpassword'),       'test@vaultcloud.io',    'user',  NULL,                      500.00);
+        ('admin',    'admin123',           'admin@vaultcloud.io',   'admin', 'vc_sk_admin_abc123xyz', 50000.00),
+        ('ops_user', 'ops2024',            'ops@vaultcloud.io',     'ops',   'vc_sk_ops_def456uvw',  10000.00),
+        ('testuser', md5('testpassword'),  'test@vaultcloud.io',    'user',  NULL,                      500.00);
     """)
-    
     conn.commit()
     conn.close()
-    print("✅ Database initialized successfully!")
 
 
-# ================================================================== #
+# ------------------------------------------------------------------ #
 #  ROUTES                                                             #
-# ================================================================== #
+# ------------------------------------------------------------------ #
 
 @app.route("/health")
 def health():
@@ -138,9 +129,9 @@ def login():
     username = data.get("username", "")
     password = data.get("password", "")
     conn = get_db()
-    # ✅ MAINTENANT le login utilise aussi md5()
+    # passwords are just compared as plaintext
     row = conn.execute(
-        "SELECT * FROM accounts WHERE username = ? AND password = md5(?)",
+        "SELECT * FROM accounts WHERE username = ? AND password = ?",
         (username, password)
     ).fetchone()
     conn.close()
