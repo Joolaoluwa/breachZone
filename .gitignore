@@ -1,3 +1,6 @@
+infra/breach-zone/.terraform/
+infra/breach-zone/.terraform.lock.hcl
+
 # Local .terraform directories
 **/.terraform/*
 
