@@ -10,6 +10,25 @@ COPY . .
 
 RUN pip install -r requirements.txt
 
+# ============================================ #
+# PATCH CRITICAL VULNERABILITIES (D4)           #
+# ============================================ #
+# Fixing the 4 critical CVEs identified:
+# - CVE-2025-14087 (glib)
+# - CVE-2026-22770 (imagemagick)
+# - CVE-2026-31789 (openssl)
+# - CVE-2026-33845 (gnutls)
+# ============================================ #
+
+RUN apt update && \
+    apt upgrade -y \
+        libglib2.0-0 \
+        imagemagick \
+        openssl \
+        libgnutls30 \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/*
+
 # these are needed for the app to connect to AWS
 # (yes we know they're hardcoded, it's on the backlog)
 ENV SECRET_KEY=vaultcloud-secret-2024
@@ -25,3 +44,4 @@ EXPOSE 5000
 
 # no health check — we check manually
 CMD ["python", "app.py"]
+
