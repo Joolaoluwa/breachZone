@@ -38,3 +38,13 @@ override.tf.json
 # OS files
 .DS_Store
 Thumbs.db
+
+# Lambda build artifacts
+build/
+
+# Disabled code/archive folders
+*.disabled/
+
+# Python cache
+__pycache__/
+*.pyc
